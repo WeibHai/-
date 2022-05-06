@@ -1,0 +1,208 @@
+import sys
+import tkinter as tk
+from tkinter import ttk
+import shelve
+import csv
+from docxtpl import DocxTemplate
+
+main_win = tk.Tk()
+main_win.title('Ассистент НТехО')
+main_win.geometry('888x450')
+main_win['bg'] = '#87AE89'
+
+with shelve.open('data_at.db') as states:
+    users_form_r = states.get('users_form', 'Не указано')
+    command_form_r = states.get('command_form', 'Не указано')
+    command_r = states.get('command', 'Не указано')
+    user_r = states.get('user', 'Не указано')
+    clicks_r = states.get('clicks_all', '0')
+    clicks_TR_r = states.get('clicks_TR', '0')
+    clicks_CR_r = states.get('clicks_CR', '0')
+    clicks_KR_r = states.get('clicks_KR', '0')
+
+table = ttk.Treeview(main_win, show='headings')
+table.grid(row=10,column=0, columnspan=2, sticky='w')
+
+table['columns'] = ('№п/п', 'Подразделение:', 'Марка ВВСТ:', 'Военный номер:', 'Вид ремонта:', 'Описание дефекта:', 'Восстановление силами:', 'Срок восстановления:')
+table.column('#0', width=0)
+table.column('№п/п', width=40)
+table.column('Подразделение:', width=95)
+table.column('Марка ВВСТ:', width=90)
+table.column('Военный номер:', width=110)
+table.column('Вид ремонта:', width=150)
+table.column('Описание дефекта:', width=120)
+table.column('Восстановление силами:', width=150)
+table.column('Срок восстановления:', width=130)
+
+table.heading("#0", text="")
+table.heading('№п/п', text="№п/п")
+table.heading('Подразделение:', text="Подразделение:")
+table.heading('Марка ВВСТ:', text="Марка ВВСТ:")
+table.heading('Военный номер:', text="Военный номер:")
+table.heading('Вид ремонта:', text="Вид ремонта:")
+table.heading('Описание дефекта:', text="Описание дефекта:")
+table.heading('Восстановление силами:', text="Восстановление силами:")
+table.heading('Срок восстановления:', text="Срок восстановления:")
+
+with open("new.csv") as myfile:
+    csvread = csv.reader(myfile, delimiter=',')
+    for row in csvread:
+        table.insert("", 'end', values=row)
+
+input_data = tk.Label(main_win, text='Данные о пользователе и командование:', bg = '#87AE89').grid(row=0, column=0, sticky='w')
+users_form = tk.Label(main_win, text='Формирование:', bg = '#87AE89').grid(row=1, column=0, sticky='w')
+users_form_entry_sv = tk.StringVar()
+users_form_entry_sv.set(users_form_r)
+users_form_entry = tk.Entry(main_win, textvariable=users_form_entry_sv).grid(row=1, column=0, sticky='w', padx=170)
+
+сommand_form = tk.Label(main_win, text='Командир формирования:', bg = '#87AE89').grid(row=2, column=0, sticky='w')
+сommand_form_sv = tk.StringVar()
+сommand_form_sv.set(command_form_r)
+сommand_form_entry = tk.Entry(main_win, textvariable=сommand_form_sv).grid(row=2, column=0, sticky='w', padx=170)
+
+сommand = tk.Label(main_win, text='Начальник по направлению:', bg = '#87AE89').grid(row=3, column=0, sticky='w')
+сommand_sv = tk.StringVar()
+сommand_sv.set(command_r)
+сommand = tk.Entry(main_win, textvariable=сommand_sv).grid(row=3, column=0, sticky='w', padx=170)
+
+user = tk.Label(main_win, text='Пользователь:', bg = '#87AE89').grid(row=4, column=0, sticky='w')
+user_sv = tk.StringVar()
+user_sv.set(user_r)
+user = tk.Entry(main_win, textvariable=user_sv).grid(row=4, column=0, sticky='w', padx=170)
+
+technical_condition_data = tk.Label(main_win, text='Данные о тех. состояние ВВСТ:', bg = '#87AE89').grid(row=5, column=0, sticky='w')
+total_defective_1 = tk.Label(main_win, text='Всего неисправно:', bg = '#87AE89').grid(row=6, column=0, sticky='w')
+clicks = tk.IntVar()
+clicks.set(clicks_r)
+total_defective_2 = tk.Label(main_win, textvariable=clicks, bg = '#87AE89').grid(row=6, column=0, sticky='w', padx=163)
+
+TP_defective_1 = tk.Label(main_win, text='Текущий ремонт:', bg = '#87AE89').grid(row=7, column=0, sticky='w')
+TR_clicks = tk.IntVar()
+TR_clicks.set(clicks_TR_r)
+TP_defective_2 = tk.Label(main_win, textvariable=TR_clicks, bg = '#87AE89').grid(row=7, column=0, sticky='w', padx=163)
+
+СP_defective_1 = tk.Label(main_win, text='Средний ремонт:', bg = '#87AE89').grid(row=8, column=0, sticky='w')
+CR_clicks = tk.IntVar()
+CR_clicks.set(clicks_CR_r)
+СP_defective_2 = tk.Label(main_win, textvariable=CR_clicks, bg = '#87AE89').grid(row=8, column=0, sticky='w', padx=163
+                                                                                 )
+КP_defective_1 = tk.Label(main_win, text='Капитальный ремонт:', bg = '#87AE89').grid(row=9, column=0, sticky='w')
+KR_clicks = tk.IntVar()
+KR_clicks.set(clicks_KR_r)
+КP_defective_2 = tk.Label(main_win, textvariable=KR_clicks, bg = '#87AE89').grid(row=9, column=0, sticky='w', padx=163)
+
+form_to_fill = tk.Label(main_win, text='Заполните пункты ниже на основание образцов:', bg = '#87AE89').grid(row=0, column=0, columnspan=2, sticky='w',  padx=300)
+
+form_def_tech = tk.Label(main_win, text='Подразделение:', bg = '#87AE89').grid(row=1, column=0, sticky='w',  padx=300)
+form_def_tech_pattern = tk.Label(main_win, text='(Образец заполнения: 111 мсп, 1 мсб, 1 мср)', bg = '#87AE89').grid(row=1, column=0, sticky='w',  padx=575)
+form_def_tech_entry_sv = tk.StringVar()
+form_def_tech_entry = tk.Entry(main_win, textvariable=form_def_tech_entry_sv).grid(row=1, column=0, sticky='w',  padx=450)
+
+model = tk.Label(main_win, text='Марка ВВСТ:', bg = '#87AE89').grid(row=2, column=0, sticky='w',  padx=300)
+model_pattern = tk.Label(main_win, text='(Образец заполнения: Т-34-85)', bg = '#87AE89').grid(row=2, column=0, sticky='w',  padx=575)
+model_sv = tk.StringVar()
+model = tk.Entry(main_win, textvariable=model_sv).grid(row=2, column=0, sticky='w',  padx=450)
+
+military_number = tk.Label(main_win, text='Военный номер:', bg = '#87AE89').grid(row=3, column=0, sticky='w',  padx=300)
+military_number_pattern = tk.Label(main_win, text='(Образец заполнения: №394 или №9922 кв)', bg = '#87AE89').grid(row=3, column=0, sticky='w',  padx=575)
+military_number_entry_sv = tk.StringVar()
+military_number_entry = tk.Entry(main_win, textvariable=military_number_entry_sv).grid(row=3, column=0, sticky='w',  padx=450)
+
+description = tk.Label(main_win, text='Описание деффекта:', bg = '#87AE89').grid(row=4, column=0, sticky='w',  padx=300)
+description_pattern = tk.Label(main_win, text='(Образец заполнения: Не стабильная работа ДВС)', bg = '#87AE89').grid(row=4, column=0, sticky='w',  padx=575)
+description_entry_sv = tk.StringVar()
+description_entry = tk.Entry(main_win, textvariable=description_entry_sv).grid(row=4, column=0, sticky='w',  padx=450)
+
+recovery_time = tk.Label(main_win, text='Срок восстановления:', bg = '#87AE89').grid(row=5, column=0, sticky='w',  padx=300)
+description_pattern = tk.Label(main_win, text='(Образец заполнения: до 31.12.1924)', bg = '#87AE89').grid(row=5, column=0, sticky='w',  padx=575)
+recovery_time_entry_sv = tk.StringVar()
+recovery_time_entry = tk.Entry(main_win, textvariable=recovery_time_entry_sv).grid(row=5, column=0, sticky='w',  padx=450)
+
+performer_tuple = ('РВО формирования', 'Завода-изготовителя','Экипажа')
+recovery_time = tk.Label(main_win, text='Восстановление силами:',  bg = '#87AE89' ).grid(row=6, column=0, sticky='w',  padx=300)
+performer_sv = tk.StringVar()
+performer_sv.set("Не указанно")
+performer = ttk.Combobox(main_win, values=performer_tuple,textvariable=performer_sv).grid(row=7, column=0, sticky='w',  padx=300)
+
+type_of_repair = ('ТР (текущий ремонт)', 'СР (средний ремонт)', 'КР (капитальный ремонт)')
+type_of_repair_label = tk.Label(main_win, text='Вид ремонта:',  bg = '#87AE89' ).grid(row=6, column=0, sticky='w',  padx=450)
+type_of_repair_combobox_sv = tk.StringVar()
+type_of_repair_combobox_sv.set("Не указанно")
+type_of_repair_combobox = ttk.Combobox(main_win, textvariable=type_of_repair_combobox_sv, values=type_of_repair,).grid(row=7, column=0, sticky='w',  padx=450)
+
+
+def add_def_tech():
+    table.insert(parent='', index='end', text='', values=(clicks.get() + 1, form_def_tech_entry_sv.get(), model_sv.get(), military_number_entry_sv.get(), type_of_repair_combobox_sv.get(), description_entry_sv.get(), performer_sv.get(), recovery_time_entry_sv.get()))
+    clicks.set(clicks.get() + 1)
+    if type_of_repair_combobox_sv.get() == 'ТР (текущий ремонт)':
+        TR_clicks.set(TR_clicks.get() + 1)
+    elif type_of_repair_combobox_sv.get() == 'СР (средний ремонт)':
+        CR_clicks.set(CR_clicks.get() + 1)
+    elif type_of_repair_combobox_sv.get() == 'КР (капитальный ремонт)':
+        KR_clicks.set(KR_clicks.get() + 1)
+    recovery_time_entry_sv.set("")
+    performer_sv.set("Не указанно")
+    type_of_repair_combobox_sv.set("Не указанно")
+    description_entry_sv.set("")
+    military_number_entry_sv.set("")
+    model_sv.set("")
+    form_def_tech_entry_sv.set("")
+
+def del_def_tech():
+    curItem = table.item(table.focus())
+    table.delete(table.focus())
+    clicks.set(clicks.get() - 1)
+    if curItem['values'][4] == 'ТР (текущий ремонт)':
+        TR_clicks.set(TR_clicks.get() - 1)
+    if curItem['values'][4] == 'СР (средний ремонт)':
+        CR_clicks.set(CR_clicks.get() - 1)
+    if curItem['values'][4] == 'КР (капитальный ремонт)':
+        KR_clicks.set(KR_clicks.get() - 1)
+
+
+add_def_tech_button = tk.Button(main_win, text="Добавить", command=add_def_tech).grid(row=0, column=0, columnspan=2, sticky='w',  padx=640)
+
+del_def_tech_button = tk.Button(main_win, text="Удалить", command=del_def_tech).grid(row=0, column=0, columnspan=2, sticky='w',  padx=710)
+
+def func_save_exit():
+    users_form_w = users_form_entry_sv.get()
+    сommand_form_w = сommand_form_sv.get()
+    сommand_w = сommand_sv.get()
+    user_w = user_sv.get()
+    clicks_w = clicks.get()
+    TR_clicks_w = TR_clicks.get()
+    CR_clicks_w = CR_clicks.get()
+    KR_clicks_w = KR_clicks.get()
+    with shelve.open('data_at.db') as states:
+        states["users_form"] = users_form_w
+        states["command_form"] = сommand_form_w
+        states["command"] = сommand_w
+        states["user"] = user_w
+        states["clicks_all"] = clicks_w
+        states["clicks_TR"] = TR_clicks_w
+        states["clicks_CR"] = CR_clicks_w
+        states["clicks_KR"] = KR_clicks_w
+    with open("new.csv", "w", newline='') as myfile:
+        csvwriter = csv.writer(myfile, delimiter=',')
+        for row_id in table.get_children():
+            row = table.item(row_id)['values']
+            print('save row:', row)
+            csvwriter.writerow(row)
+    main_win.destroy()
+    sys.exit()
+
+save_and_exit = tk.Button(main_win, text="Сохранить и выйти", command=func_save_exit).grid(row=0, column=0, columnspan=2, sticky='w',  padx=771)
+
+def create_report():
+    report = DocxTemplate("Шаблон.docx")
+    context = {'form': users_form_entry_sv.get().replace('ая', 'ой').replace('ь', 'и').lower(), 'date': date_form_report_entry_sv.get(), 'alldeftech': clicks.get(), 'trcount': TR_clicks.get(), 'crcount': CR_clicks.get(), 'krcount': KR_clicks.get()}
+    report.render(context)
+    report.save("доклад.docx")
+
+create_report = tk.Button(main_win, text="Cформировать доклад", command=create_report).grid(row=8, column=0, columnspan=2, sticky='w',  padx=610)
+
+date_form_report = tk.Label(main_win, text='Дата формирования доклада:',  bg = '#87AE89' ).grid(row=8, column=0, columnspan=2, sticky='w',  padx=300)
+date_form_report_entry_sv = tk.StringVar()
+date_form_report_entry = tk.Entry(main_win, textvariable=date_form_report_entry_sv).grid(row=8, column=0, columnspan=2, sticky='w',  padx=470)
+
+main_win.mainloop()
